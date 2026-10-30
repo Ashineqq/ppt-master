@@ -36,7 +36,7 @@ An all-`web` deck never reads `image-generator.md`, and vice versa.
 ## 2. Procedure
 
 1. Read the Design Spec/lock or reuse Quick's active-context decisions; separate derivatives, group canonical rows by `Acquire Via`; ensure `project/images/` exists.
-2. Finish `user` and triggered `ai` / `web` / `slice` canonical preparation.
+2. Finish `user` and triggered `ai` / `web` / `slice` canonical preparation as one batch per path with concurrent workers (§3); never run rows sequentially one command at a time.
 3. Materialize only declared derivatives from usable parents, preserving originals, then run `analyze_images.py` once before SVG.
 4. Verify: every non-skipped row has `project/images/<filename>` or is `Needs-Manual`; each derivative has its distinct file and usable parent, with web provenance copied in `image_sources.json`; every `slice` row has its element file or is `Needs-Manual` because its sheet is unavailable; no `Pending`, `Failed`, or `Needs-Selection` remains — write each resource row's terminal `Status` back yourself, since the tools update only their own manifests; `image_prompts.json` exists when an active `ai` row remains, every entry `Generated` or `Needs-Manual`; `image_sources.json` exists when a web row was processed, every entry with `license_tier ∈ {no-attribution, attribution-required, manual}`.
 

@@ -44,7 +44,12 @@ The dispatcher writes standard Markdown plus a conversion profile beside each so
 
 **Sufficiency test**: after reading direct and converted content, run [`topic-research`](stages/topic-research.md) only for gaps where the requested outcome would otherwise require inventing, omitting, or leaving unsupported an externally verifiable claim. A closed corpus stays within the supplied material; file presence or length is irrelevant. Research records facts and adopted URLs in its pair; Step 2 fetches no adopted page, and Step 5 acquires only Strategist-selected assets after final confirmation.
 
-**Time box**: research runs inside the three-minute intake time box owned by [`topic-research`](stages/topic-research.md) § Execution Context; a worker that overruns is interrupted and the pair is finished from verified facts, so intake never delays Step 2.
+**Hard rule — intake time box (R17, owner [`topic-research`](stages/topic-research.md) § Execution Context)**: the whole Step 1 research phase shares one three-minute budget. The main agent reads only that stage's When-to-Run + sufficiency test to decide gaps and dispatch; the worker reads the full stage file. Write the budget into every worker prompt, start the clock before the first search and check it before writing the pair (a non-zero `check` ends intake on the spot), interrupt an overrunning worker and finish the pair from verified facts. Independent gap sets run as concurrent workers in one message, never serialized.
+
+```bash
+python3 ${SKILL_DIR}/scripts/phase_clock.py start <project_path|projects> research --state projects/.phase_budget.json
+python3 ${SKILL_DIR}/scripts/phase_clock.py check <project_path|projects> research --budget 180 --state projects/.phase_budget.json
+```
 
 **EMF/WMF from DOCX/PPTX**: embedded Office vectors land in `images/` with `image_manifest.json` as first-class §VIII assets. Never convert them to PNG; export embeds them at full vector fidelity, and a blank browser preview is expected ([`project.md`](../scripts/docs/project.md); export behavior in [`svg-pipeline.md`](../scripts/docs/svg-pipeline.md)).
 
@@ -109,14 +114,16 @@ Read ${SKILL_DIR}/references/canvas-formats.md
 | Stage 1 confirmed and a Brand/Style/Layout/Deck workspace installed | `references/strategist-template.md` before Stage 2 |
 | Confirmed `delivery_context` is recorded/self-running/video, or input is a final/literal narration script | `references/video-design.md` before the three Stage-2 solutions and page roster |
 
-After Stage 1 and the template handoff, load the fixed planning-capability block in one batch before authoring any Stage-2 solution, image recommendation, or roster:
+After Stage 1 and the template handoff, load the planning-capability block in one batch before authoring any Stage-2 solution, image recommendation, or roster. Always load these four; add the conditional lines only when their trigger holds — never preload an untriggered file:
 
 ```
-Read ${SKILL_DIR}/references/strategist-image.md
 Read ${SKILL_DIR}/references/modes/_index.md
 Read ${SKILL_DIR}/references/visual-styles/_index.md
 Read ${SKILL_DIR}/references/image-renderings/_index.md
 Read ${SKILL_DIR}/templates/icons/README.md
+# only when confirmed image source != none:
+Read ${SKILL_DIR}/references/strategist-image.md
+# only when the roster or sources signal data graphics (chart/table family or live values):
 Read ${SKILL_DIR}/templates/charts/chart-vocabulary.md
 Read ${SKILL_DIR}/templates/tables/table-vocabulary.md
 ```

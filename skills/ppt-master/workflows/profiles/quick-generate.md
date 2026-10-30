@@ -92,7 +92,7 @@ A file taken from another project's tree is copied unless `--move` is explicit; 
 
 **Template Application paragraph**: freeze one in context — explicit user instructions first, otherwise the fit of the content to the complete roster, defaulting to reference-led use (redesign after full-roster study; other readings such as augment-only or replacement-only are examples, not a menu). It names which prototypes may be used, skipped, repeated, reordered, or adapted, what stays fixed, and any exception by exact SVG basename. When a detail is later uncertain, reread the installed SVG. When the structure owner records `replication_mode: mirror`, say explicitly whether pages reuse the prototypes literally (text values only, topology frozen) or redesign from them — Quick has no `template_reuse_scope`, so this sentence is the only record of that choice.
 
-Read the planning-capability batch in one pass — a capability map, not a usage checklist:
+Read the planning-capability batch in one pass — a capability map, not a usage checklist. Always load the core five; add the vocab lines only when the brief or sources signal data graphics:
 
 ```
 Read ${SKILL_DIR}/references/plan-core.md
@@ -101,6 +101,7 @@ Read ${SKILL_DIR}/references/modes/_index.md
 Read ${SKILL_DIR}/references/visual-styles/_index.md
 Read ${SKILL_DIR}/references/image-renderings/_index.md
 Read ${SKILL_DIR}/templates/icons/README.md
+# only when data graphics are signaled (chart/table family or live values):
 Read ${SKILL_DIR}/templates/charts/chart-vocabulary.md
 Read ${SKILL_DIR}/templates/tables/table-vocabulary.md
 ```
