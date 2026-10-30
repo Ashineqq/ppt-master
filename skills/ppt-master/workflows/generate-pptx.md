@@ -12,7 +12,7 @@ description: Default Generate PPTX authority for source intake, planning, SVG au
 
 **Generate-specific execution discipline**:
 
-- Page authoring stays with the current main agent ([`executor-base.md`](../references/executor-base.md) §3); the checker cadence is Step 6's.
+- Page ownership and any parallel authoring split are [`executor-base.md`](../references/executor-base.md) §3's; the main agent still draws the style anchor and runs every gate in Step 6.
 - Gate checklists are internal: on success continue with at most one compact status line; on failure report only the blocking items and required recovery.
 
 **SVG page-design boundary**: `svg_output/` is the complete page-design source — every visible element of the exported slide is in the page SVG or referenced by it; templates, `design_spec.md`, and `spec_lock.md` never supply content at export ([`shared-standards-core.md`](../references/shared-standards-core.md) §4.0). Export compiles only the selected route's explicit structure contract (`flat` Slide-local; `structured` Master/Layout/Slide parts) and never infers structure. `svg_final/` is an optional preview release export never reads. Notes, animations, narration, and Edit Native PPTX stay outside this closure.
@@ -43,6 +43,8 @@ description: Default Generate PPTX authority for source intake, planning, SVG au
 The dispatcher writes standard Markdown plus a conversion profile beside each source. Use `-t <type>` only when detection is ambiguous and `-o` only when a specific output location is required (an output directory for multiple or directory inputs). PPTX sources also receive standard intake in `<project>/analysis/` after Step 2. Backend details: [`conversion.md`](../scripts/docs/conversion.md); its § Image Orientation Review applies when the user requests correction, converted text asks for rotated viewing, or a downloaded asset is visibly sideways (never launch its legacy HTML tool).
 
 **Sufficiency test**: after reading direct and converted content, run [`topic-research`](stages/topic-research.md) only for gaps where the requested outcome would otherwise require inventing, omitting, or leaving unsupported an externally verifiable claim. A closed corpus stays within the supplied material; file presence or length is irrelevant. Research records facts and adopted URLs in its pair; Step 2 fetches no adopted page, and Step 5 acquires only Strategist-selected assets after final confirmation.
+
+**Time box**: research runs inside the three-minute intake time box owned by [`topic-research`](stages/topic-research.md) § Execution Context; a worker that overruns is interrupted and the pair is finished from verified facts, so intake never delays Step 2.
 
 **EMF/WMF from DOCX/PPTX**: embedded Office vectors land in `images/` with `image_manifest.json` as first-class §VIII assets. Never convert them to PNG; export embeds them at full vector fidelity, and a blank browser preview is expected ([`project.md`](../scripts/docs/project.md); export behavior in [`svg-pipeline.md`](../scripts/docs/svg-pipeline.md)).
 
@@ -202,9 +204,13 @@ Load only the references the rows need; a mixed deck writes both `image_prompts.
 
 **Web selection**: when any vision-capable context exists, add `--save-candidates` with explicit `query_variants` and run [`web-image-review`](stages/web-image-review.md). Only a stage-selected candidate is promoted with `--promote`; a row advances to `next_candidate_page` before its query changes, and only an exhausted pool returns it to `Pending` with new variants. Without vision, omit `--save-candidates`: best-only mode downloads a strict metadata-verified candidate (`selection_method: metadata-ranked`) or stops at `Needs-Manual`. Only after normal search is exhausted may a vision-capable owner fetch one [`topic-research`](stages/topic-research.md) `source_url` as a reviewed source package. §VIII `Reference` stays the locked intent; the provider query is authored separately.
 
-🚧 **Exhausted-automation GATE**: `auto` tries Path A then Path B and never silently enters Offline Manual. When both are exhausted, or a confirmed `api` / `host-native` path stays unavailable after retry, ask whether to repair and retry the same path, generate the listed files manually, or cancel the affected AI images and repair the plan; only confirmed `manual` creates `Needs-Manual` rows. Web failures follow [`image-base.md`](../references/image-base.md) §3 without halting: try materially different query/provider/license strategies, then mark `Needs-Manual`, report, and continue.
+🚧 **Time box**: the whole phase stays inside the three-minute acquisition budget of [`image-base.md`](../references/image-base.md) §3 — one batch round, one review pass, then accept, drop, or `Needs-Manual` and continue to Step 6.
+
+**Exhausted-automation GATE**: `auto` tries Path A then Path B and never silently enters Offline Manual. When both are exhausted, or a confirmed `api` / `host-native` path stays unavailable after retry, ask whether to repair and retry the same path, generate the listed files manually, or cancel the affected AI images and repair the plan; only confirmed `manual` creates `Needs-Manual` rows. Web failures follow [`image-base.md`](../references/image-base.md) §3 without halting: try materially different query/provider/license strategies, then mark `Needs-Manual`, report, and continue.
 
 **Workflow**: run the procedure in [`image-base.md`](../references/image-base.md) §2 — separate derivative rows, group canonical rows by `Acquire Via`, finish each path, slice each generated sheet with its grid, `--names`, and the exact key HEX from its prompt, materialize derivatives only from terminal sources under their declared treatment. Then verify every row is terminal (no `Pending`, `Failed`, or `Needs-Selection`; an unresolved Default AI row waits at the gate above) and run `python3 ${SKILL_DIR}/scripts/analyze_images.py <project_path>/images` so the CSV reflects every placeable image. Every Pending/Failed row reaches a terminal state before Executor starts.
+
+Record the acquisition dispatch and check its clock (`scripts/phase_clock.py dispatch|check <project_path> acquisition --budget 180`); a non-zero check ends acquisition at the budget.
 
 **✅ Internal checkpoint** — sidecars, slice outputs, terminal statuses, refreshed CSV. Do not print. Auto-proceed to Step 6; only `generation_mode: split` prints the handoff and stops this conversation (English template; translate to the user's chat language if different, including the resume request):
 
@@ -297,6 +303,7 @@ python3 ${SKILL_DIR}/scripts/svg_quality_checker.py <project_path> \
   --canonical-authoring --stage final --json
 ```
 
+- **Dispatch receipt**: on a roster of eight or more pages, `python3 ${SKILL_DIR}/scripts/phase_clock.py report <project_path>` must show a `pages` dispatch naming the delegated basenames; a single-agent roster records that deliberate exception instead of a dispatch row.
 - Before the gate, every §IX `Native-ready` `<object-key>=yes` has its draw-time marker group and JSON child; `=no` and incidental microvisuals stay ordinary SVG (a legacy bare `yes|no` is readable only when the page has exactly one eligible object). JSON-first Chart/Table validates inline schema/bounds; SVG-first markers need a current `data-pptx-fallback-sha256`, stamped after synchronization — missing or stale baselines block canonical/native export, not fallback export.
 - `--json` writes `validation/svg_quality_report.json`, the report the exporter fingerprints against `svg_output/`; stdout stays the human-readable summary and is never parsed as JSON. Without `--json` the export is refused.
 - One run against `svg_output/` reports every page; repair under the consolidated-pass discipline in [`executor-base.md`](../references/executor-base.md) §3. If output is truncated, extract only `categories.blocking.issues` (and `categories.introduced.issues` when needed) from that run's `validation/svg_quality_report.json`, where `inherited` and `source-import` are provenance and `introduced` holds changed/new warnings.

@@ -43,6 +43,17 @@ Default bundles only genuinely missing scope or research-boundary decisions into
 
 **Hard rule — isolate retrieval, not research**: raw page content stays in the worker context. The 250-word limit applies only to its chat receipt (`status`, artifact paths, covered/unresolved gap counts, external-fact count, material conflicts), never to the artifacts. After validation and import, the content owner reads the complete imported pair into the main context; never use the receipt as content.
 
+**Hard rule — intake time box (about three minutes)**: the whole source-intake phase — orienting searches, fetches, and the worker's write — shares one three-minute budget, written into the worker's prompt. One orienting round (at most one search per declared gap) and at most one targeted fill round; when the budget is spent, write the pair from what is already verified and stop. An unverified gap stays named as an open gap in the Markdown and is never filled from memory to look complete. A worker still running at the limit is interrupted; the main agent finishes the pair from the receipt and its own verified facts instead of waiting.
+
+**Hard rule — dispatch does not serialize**: independent gap sets may run as concurrent workers, each with the same stated budget and its own two output paths; the main agent merges the pairs and owns validation. Research never holds the route open past its budget — Step 2 continues on whatever the budget produced.
+
+**Mechanical receipt**: the budget is recorded, not remembered — `start` before the first search, `check` before writing the pair; a non-zero `check` ends intake on the spot and the pair is written from verified facts only.
+
+```bash
+python3 ${SKILL_DIR}/scripts/phase_clock.py start <project_path|projects> research --state projects/.phase_budget.json
+python3 ${SKILL_DIR}/scripts/phase_clock.py check <project_path|projects> research --budget 180 --state projects/.phase_budget.json
+```
+
 **Validation**: before import, verify both files exist, the Markdown contains `## Research Brief` and no source list or URL, the JSON parses with schema `ppt-master.fact-provenance.v1` and unique sequential IDs, and the two agree. Return an invalid pair to the worker for repair; use main-context research only when isolation is unavailable.
 
 ---

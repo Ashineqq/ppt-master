@@ -153,6 +153,8 @@ Read ${SKILL_DIR}/templates/tables/table-vocabulary.md
 
 **Quick exhausted-automation no-AI replan** ([`image-generator.md`](../../references/image-generator.md) §7): when an automated AI path or its dependent slicing is exhausted, ask no path question and enter no manual fallback. Remove the affected AI jobs and stale manifest entries, carry their communication content with native text/SVG or prepared non-AI assets, and continue. Retaining AI imagery means repairing capability and starting a new Quick run.
 
+**Acquisition time box**: the whole resource phase stays inside the three-minute budget of [`image-base.md`](../../references/image-base.md) §3 — one batch round and one review pass per row, then accept, drop, or continue with native carriers.
+
 **Validation before §3**: every file-backed resource is terminal — `Existing`, `Generated`, or `Sourced` under [`svg-image-embedding.md`](../../references/svg-image-embedding.md) — and every `slice_names` basename resolves to its PNG; a missing name resumes its owning step and is never deferred to the checker. Never bypass status by preview or presence, never substitute unrelated material.
 
 | Web status | Rule |
